@@ -115,14 +115,19 @@ async def test_create_order_snapshots_items_and_decrements_stock(db_session):
     assert order.status == OrderStatus.NEW
     assert product.stock_quantity == 9
 
-    reloaded = await order_service.get_order(db_session, order.id)
-    assert len(reloaded.items) == 1
-    line = reloaded.items[0]
+    # create_order's return value itself must carry its items without a
+    # re-query: order.items was appended to via the relationship (not a raw
+    # order_id FK), so this is a plain read rather than a lazy load.
+    assert len(order.items) == 1
+    line = order.items[0]
     assert line.product_name_uz == "Vitamin C"
     assert line.product_name_ru == "Витамин C"
     assert line.unit_price == 60000
     assert line.quantity == 1
     assert line.line_total == 60000
+
+    reloaded = await order_service.get_order(db_session, order.id)
+    assert len(reloaded.items) == 1
 
 
 async def test_create_order_applies_free_delivery_threshold(db_session):

@@ -29,11 +29,10 @@ async def get_or_create_cart(session: AsyncSession, user: User) -> Cart:
     cart = (await session.execute(stmt)).scalar_one_or_none()
     if cart is None:
         cart = Cart(user_id=user.id)
-        # Set explicitly (not just left at the ORM's implicit empty default) so
-        # accessing .items after flush() is a plain read instead of a lazy load —
-        # once the object is persistent, SQLAlchemy no longer assumes an
-        # untouched collection is empty and would query for it instead, which
-        # raises MissingGreenlet under AsyncSession outside an awaited call.
+        # Set before add()/flush(), while `cart` is still transient: once the
+        # object is persistent, SQLAlchemy no longer assumes an untouched
+        # collection is empty and would lazy-load it on the next access (even
+        # just to assign it), which raises MissingGreenlet under AsyncSession.
         cart.items = []
         session.add(cart)
         await session.flush()

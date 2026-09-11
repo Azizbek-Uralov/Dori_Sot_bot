@@ -72,13 +72,17 @@ async def create_order(
         status=OrderStatus.NEW,
         customer_language=customer_language,
     )
+    # Set before add()/flush(), while `order` is still transient: assigning a
+    # relationship reads its current value first (for cascade bookkeeping), and
+    # that read is itself a lazy load once the object is persistent — see
+    # get_or_create_cart for the same fix on Cart.items, done in the same order.
+    order.items = []
     session.add(order)
     await session.flush()
 
     for line in summary.lines:
-        session.add(
+        order.items.append(
             OrderItem(
-                order_id=order.id,
                 product_id=line.product.id,
                 product_name_uz=line.product.name_uz,
                 product_name_ru=line.product.name_ru,
