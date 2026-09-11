@@ -31,7 +31,6 @@ async def get_or_create_cart(session: AsyncSession, user: User) -> Cart:
         cart = Cart(user_id=user.id)
         session.add(cart)
         await session.flush()
-        cart.items = []
     return cart
 
 
@@ -51,12 +50,11 @@ async def add_item(session: AsyncSession, user: User, product_id: int, quantity:
 
 async def set_quantity(session: AsyncSession, user: User, product_id: int, quantity: int) -> None:
     cart = await get_or_create_cart(session, user)
-    stmt = select(CartItem).where(CartItem.cart_id == cart.user_id, CartItem.product_id == product_id)
-    item = (await session.execute(stmt)).scalar_one_or_none()
+    item = next((i for i in cart.items if i.product_id == product_id), None)
     if item is None:
         return
     if quantity <= 0:
-        await session.delete(item)
+        cart.items.remove(item)
     else:
         item.quantity = quantity
     await session.commit()
@@ -68,8 +66,7 @@ async def remove_item(session: AsyncSession, user: User, product_id: int) -> Non
 
 async def clear_cart(session: AsyncSession, user: User) -> None:
     cart = await get_or_create_cart(session, user)
-    for item in list(cart.items):
-        await session.delete(item)
+    cart.items.clear()
     await session.commit()
 
 
