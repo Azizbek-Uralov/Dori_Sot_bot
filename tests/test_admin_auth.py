@@ -1,4 +1,31 @@
+from admin.auth import hash_password, verify_password
 from tests.conftest import make_admin
+
+
+def test_verify_password_rejects_input_over_72_bytes():
+    # bcrypt itself raises ValueError past 72 bytes instead of just failing
+    # the check; verify_password must treat that as "wrong password" rather
+    # than letting the error escape to the caller.
+    password_hash = hash_password("devpass123")
+
+    assert verify_password("a" * 73, password_hash) is False
+
+
+def test_verify_password_counts_utf8_bytes_not_characters():
+    # multi-byte characters can push the byte length over 72 well before the
+    # character count does, so the check must be on encoded bytes.
+    password_hash = hash_password("devpass123")
+
+    assert len("ў" * 40) == 40
+    assert len(("ў" * 40).encode("utf-8")) > 72
+    assert verify_password("ў" * 40, password_hash) is False
+
+
+def test_verify_password_still_accepts_correct_password_at_the_boundary():
+    password = "a" * 72
+    password_hash = hash_password(password)
+
+    assert verify_password(password, password_hash) is True
 
 
 async def test_login_page_renders(admin_client, db_session):
@@ -41,6 +68,19 @@ async def test_login_with_wrong_password_rejected(admin_client, db_session):
 
     assert response.status_code == 401
     assert "session" not in response.cookies
+
+
+async def test_login_with_overlong_password_rejected(admin_client, db_session):
+    await make_admin(db_session, username="admin", password="devpass123")
+    await db_session.commit()
+
+    response = await admin_client.post(
+        "/login", data={"username": "admin", "password": "a" * 100}
+    )
+
+    assert response.status_code == 401
+    assert "session" not in response.cookies
+    assert "Login yoki parol noto" in response.text
 
 
 async def test_login_with_unknown_username_rejected(admin_client, db_session):
