@@ -1,0 +1,25 @@
+{% extends "base.html" %}
+{% block title %}Mahsulot{% endblock %}
+{% block content %}
+<h1>{% if product %}Mahsulotni tahrirlash{% else %}Yangi mahsulot{% endif %}</h1>
+<form method="post" action="{% if product %}/products/{{ product.id }}/edit{% else %}/products/new{% endif %}" class="form" enctype="multipart/form-data">
+  <label>Nomi (UZ)<input type="text" name="name_uz" value="{{ product.name_uz if product else '' }}" required></label>
+  <label>Nomi (RU)<input type="text" name="name_ru" value="{{ product.name_ru if product else '' }}" required></label>
+  <label>Tavsifi (UZ)<textarea name="description_uz">{{ product.description_uz if product else '' }}</textarea></label>
+  <label>Tavsifi (RU)<textarea name="description_ru">{{ product.description_ru if product else '' }}</textarea></label>
+  <label>Narxi (so'm)<input type="number" name="price" value="{{ product.price if product else 0 }}" required min="0"></label>
+  <label>Kategoriya
+    <select name="category_id" required>
+      {% for c in categories %}
+        <option value="{{ c.id }}" {% if product and product.category_id == c.id %}selected{% endif %}>{{ c.name_uz }}</option>
+      {% endfor %}
+    </select>
+  </label>
+  <label>Ombordagi qoldiq<input type="number" name="stock_quantity" value="{{ product.stock_quantity if product else 0 }}" min="0"></label>
+  <label>Rasm{% if product and product.image_path %} (joriy rasm mavjud, almashtirish uchun yangisini tanlang){% endif %}
+    <input type="file" name="image" accept="image/jpeg,image/png,image/webp">
+  </label>
+  {% if product and product.image_path %}<img class="thumb-preview" src="/{{ product.image_path }}" alt="">{% endif %}
+  <button type="submit">Saqlash</button>
+</form>
+{% endblock %}

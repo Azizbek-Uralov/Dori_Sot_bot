@@ -1,0 +1,28 @@
+<!doctype html>
+<html lang="uz">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>{% block title %}DorSotBot Admin{% endblock %}</title>
+<link rel="stylesheet" href="/static/css/style.css">
+</head>
+<body>
+<nav class="nav">
+  <div class="nav-brand">🐾 DorSotBot</div>
+  <a href="/">Bosh sahifa</a>
+  <a href="/categories">Kategoriyalar</a>
+  <a href="/products">Mahsulotlar</a>
+  <a href="/zones">Hududlar</a>
+  <a href="/orders">Buyurtmalar</a>
+  <a href="/customers">Mijozlar</a>
+  <a href="/admins">Adminlar</a>
+  <a href="/stats">Statistika</a>
+  <form action="/logout" method="post" class="logout-form">
+    <button type="submit">Chiqish</button>
+  </form>
+</nav>
+<main class="container">
+  {% block content %}{% endblock %}
+</main>
+</body>
+</html>

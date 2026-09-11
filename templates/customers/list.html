@@ -1,0 +1,20 @@
+{% extends "base.html" %}
+{% block title %}Mijozlar{% endblock %}
+{% block content %}
+<h1>Mijozlar</h1>
+<table class="table">
+  <thead><tr><th>Ism</th><th>Telefon</th><th>Buyurtmalar soni</th><th>Jami xarid</th></tr></thead>
+  <tbody>
+  {% for c in customers %}
+    <tr>
+      <td><a href="/customers/{{ c.user.id }}">{{ c.user.full_name or c.user.telegram_id }}</a></td>
+      <td>{{ c.user.phone or '—' }}</td>
+      <td>{{ c.order_count }}</td>
+      <td>{{ c.lifetime_spend }} so'm</td>
+    </tr>
+  {% else %}
+    <tr><td colspan="4">Mijozlar mavjud emas.</td></tr>
+  {% endfor %}
+  </tbody>
+</table>
+{% endblock %}

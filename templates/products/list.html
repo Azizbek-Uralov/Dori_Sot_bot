@@ -1,0 +1,38 @@
+{% extends "base.html" %}
+{% block title %}Mahsulotlar{% endblock %}
+{% block content %}
+<div class="page-header">
+  <h1>Mahsulotlar</h1>
+  <a class="btn" href="/products/new">+ Yangi mahsulot</a>
+</div>
+<form method="get" action="/products" class="filter-form">
+  <select name="category_id" onchange="this.form.submit()">
+    <option value="">Barcha kategoriyalar</option>
+    {% for c in categories %}
+      <option value="{{ c.id }}" {% if selected_category_id == c.id %}selected{% endif %}>{{ c.name_uz }}</option>
+    {% endfor %}
+  </select>
+</form>
+<table class="table">
+  <thead><tr><th>Rasm</th><th>Nomi (UZ)</th><th>Narxi</th><th>Qoldiq</th><th>Holat</th><th></th></tr></thead>
+  <tbody>
+  {% for p in products %}
+    <tr>
+      <td>{% if p.image_path %}<img class="thumb" src="/{{ p.image_path }}" alt="">{% endif %}</td>
+      <td>{{ p.name_uz }}</td>
+      <td>{{ p.price }} so'm</td>
+      <td>{% if p.stock_quantity == 0 %}<span class="badge badge-inactive">Tugagan</span>{% else %}{{ p.stock_quantity }}{% endif %}</td>
+      <td>{% if p.is_active %}<span class="badge badge-active">Faol</span>{% else %}<span class="badge badge-inactive">Nofaol</span>{% endif %}</td>
+      <td class="actions">
+        <a href="/products/{{ p.id }}/edit">Tahrirlash</a>
+        <form method="post" action="/products/{{ p.id }}/toggle-active">
+          <button type="submit">{% if p.is_active %}Nofaol qilish{% else %}Faollashtirish{% endif %}</button>
+        </form>
+      </td>
+    </tr>
+  {% else %}
+    <tr><td colspan="6">Mahsulotlar mavjud emas.</td></tr>
+  {% endfor %}
+  </tbody>
+</table>
+{% endblock %}

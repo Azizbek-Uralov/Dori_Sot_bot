@@ -1,0 +1,26 @@
+{% extends "base.html" %}
+{% block title %}Statistika{% endblock %}
+{% block content %}
+<h1>Statistika</h1>
+<div class="stats-grid">
+  <div class="stat-card"><span class="stat-value">{{ totals.orders_count }}</span><span class="stat-label">Buyurtmalar</span></div>
+  <div class="stat-card"><span class="stat-value">{{ totals.total_revenue }} so'm</span><span class="stat-label">Jami savdo</span></div>
+</div>
+<h2>Holat bo'yicha</h2>
+<ul class="status-list">
+  {% for status, count in status_counts.items() %}
+    <li>{{ status.value }}: {{ count }}</li>
+  {% endfor %}
+</ul>
+<h2>Eng ko'p sotilgan mahsulotlar</h2>
+<table class="table">
+  <thead><tr><th>Mahsulot</th><th>Soni</th><th>Summasi</th></tr></thead>
+  <tbody>
+  {% for p in best_selling %}
+    <tr><td>{{ p.name_uz }}</td><td>{{ p.total_qty }}</td><td>{{ p.total_revenue }} so'm</td></tr>
+  {% else %}
+    <tr><td colspan="3">Ma'lumot yo'q.</td></tr>
+  {% endfor %}
+  </tbody>
+</table>
+{% endblock %}

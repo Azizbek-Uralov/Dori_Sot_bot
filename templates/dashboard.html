@@ -1,0 +1,26 @@
+{% extends "base.html" %}
+{% block title %}Boshqaruv paneli{% endblock %}
+{% block content %}
+<h1>Boshqaruv paneli</h1>
+<div class="stats-grid">
+  <div class="stat-card"><span class="stat-value">{{ totals.orders_count }}</span><span class="stat-label">Buyurtmalar</span></div>
+  <div class="stat-card"><span class="stat-value">{{ totals.total_revenue }} so'm</span><span class="stat-label">Jami savdo</span></div>
+</div>
+<h2>Oxirgi buyurtmalar</h2>
+<table class="table">
+  <thead><tr><th>№</th><th>Mijoz</th><th>Jami</th><th>Holat</th><th>Sana</th></tr></thead>
+  <tbody>
+  {% for o in recent_orders %}
+    <tr>
+      <td><a href="/orders/{{ o.id }}">{{ o.id }}</a></td>
+      <td>{{ o.customer_name }}</td>
+      <td>{{ o.grand_total }} so'm</td>
+      <td><span class="badge status-{{ o.status.value }}">{{ o.status.value }}</span></td>
+      <td>{{ o.created_at.strftime("%Y-%m-%d %H:%M") }}</td>
+    </tr>
+  {% else %}
+    <tr><td colspan="5">Hozircha buyurtma yo'q.</td></tr>
+  {% endfor %}
+  </tbody>
+</table>
+{% endblock %}

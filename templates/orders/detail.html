@@ -1,0 +1,41 @@
+{% extends "base.html" %}
+{% block title %}Buyurtma №{{ order.id }}{% endblock %}
+{% block content %}
+<h1>Buyurtma №{{ order.id }}</h1>
+{% if request.query_params.get('error') == 'invalid_transition' %}
+<p class="error">Bu holatga o'tish mumkin emas.</p>
+{% endif %}
+<div class="order-detail">
+  <p><strong>Mijoz:</strong> {{ order.customer_name }} ({{ order.customer_phone }})</p>
+  <p><strong>Manzil:</strong> {{ order.delivery_address_text }}</p>
+  <p><strong>Hudud:</strong> {{ order.delivery_zone.name_uz if order.delivery_zone else '—' }}</p>
+  <p><strong>Holat:</strong> <span class="badge status-{{ order.status.value }}">{{ order.status.value }}</span></p>
+  <p><strong>Admin guruhiga xabar:</strong> {% if order.admin_notified_at %}✅ yuborilgan{% else %}❌ yuborilmagan{% endif %}</p>
+
+  <table class="table">
+    <thead><tr><th>Mahsulot</th><th>Narxi</th><th>Soni</th><th>Jami</th></tr></thead>
+    <tbody>
+    {% for item in order.items %}
+      <tr>
+        <td>{{ item.product_name_uz }}</td>
+        <td>{{ item.unit_price }} so'm</td>
+        <td>{{ item.quantity }}</td>
+        <td>{{ item.line_total }} so'm</td>
+      </tr>
+    {% endfor %}
+    </tbody>
+  </table>
+  <p>Mahsulotlar summasi: {{ order.items_subtotal }} so'm</p>
+  <p>Yetkazib berish narxi: {{ order.delivery_fee }} so'm</p>
+  <p><strong>Jami: {{ order.grand_total }} so'm</strong></p>
+
+  <form method="post" action="/orders/{{ order.id }}/status" class="status-form">
+    <select name="new_status">
+      {% for s in statuses %}
+        <option value="{{ s.value }}" {% if order.status == s %}selected{% endif %}>{{ s.value }}</option>
+      {% endfor %}
+    </select>
+    <button type="submit">Holatni o'zgartirish</button>
+  </form>
+</div>
+{% endblock %}

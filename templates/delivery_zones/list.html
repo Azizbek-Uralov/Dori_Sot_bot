@@ -1,0 +1,29 @@
+{% extends "base.html" %}
+{% block title %}Yetkazib berish hududlari{% endblock %}
+{% block content %}
+<div class="page-header">
+  <h1>Yetkazib berish hududlari</h1>
+  <a class="btn" href="/zones/new">+ Yangi hudud</a>
+</div>
+<table class="table">
+  <thead><tr><th>Nomi (UZ)</th><th>Narxi</th><th>Bepul chegara</th><th>Holat</th><th></th></tr></thead>
+  <tbody>
+  {% for z in zones %}
+    <tr>
+      <td>{{ z.name_uz }}</td>
+      <td>{{ z.delivery_price }} so'm</td>
+      <td>{{ z.free_delivery_threshold if z.free_delivery_threshold else '—' }}</td>
+      <td>{% if z.is_active %}<span class="badge badge-active">Faol</span>{% else %}<span class="badge badge-inactive">Nofaol</span>{% endif %}</td>
+      <td class="actions">
+        <a href="/zones/{{ z.id }}/edit">Tahrirlash</a>
+        <form method="post" action="/zones/{{ z.id }}/toggle-active">
+          <button type="submit">{% if z.is_active %}Nofaol qilish{% else %}Faollashtirish{% endif %}</button>
+        </form>
+      </td>
+    </tr>
+  {% else %}
+    <tr><td colspan="5">Hududlar mavjud emas.</td></tr>
+  {% endfor %}
+  </tbody>
+</table>
+{% endblock %}

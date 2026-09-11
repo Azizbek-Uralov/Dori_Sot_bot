@@ -1,0 +1,38 @@
+[project]
+name = "dorsotbot"
+version = "0.1.0"
+description = "Telegram bot + admin panel for selling pet medications"
+requires-python = ">=3.12"
+dependencies = [
+    "aiogram>=3.31,<4",
+    "fastapi>=0.141,<1",
+    "uvicorn[standard]>=0.52,<1",
+    "sqlalchemy[asyncio]>=2.0,<3",
+    "asyncpg>=0.31,<1",
+    "alembic>=1.19,<2",
+    "pydantic-settings>=2.15,<3",
+    "passlib[bcrypt]>=1.7,<2",
+    "bcrypt>=4,<6",
+    "itsdangerous>=2.2,<3",
+    "jinja2>=3.1,<4",
+    "python-multipart>=0.0.20,<1",
+    "python-dotenv>=1.2,<2",
+]
+
+[dependency-groups]
+dev = [
+    "pytest>=9,<10",
+    "pytest-asyncio>=1.4,<2",
+    "httpx>=0.28,<1",
+]
+
+[tool.pytest.ini_options]
+asyncio_mode = "auto"
+testpaths = ["tests"]
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[tool.hatch.build.targets.wheel]
+packages = ["app", "bot", "admin", "scripts"]

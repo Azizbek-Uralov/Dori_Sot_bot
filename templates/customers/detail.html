@@ -1,0 +1,23 @@
+{% extends "base.html" %}
+{% block title %}Mijoz{% endblock %}
+{% block content %}
+<h1>{{ customer.full_name or customer.telegram_id }}</h1>
+<p>Telefon: {{ customer.phone or '—' }}</p>
+<p>Til: {{ customer.language.value if customer.language else '—' }}</p>
+<h2>Buyurtmalar</h2>
+<table class="table">
+  <thead><tr><th>№</th><th>Sana</th><th>Jami</th><th>Holat</th></tr></thead>
+  <tbody>
+  {% for o in orders %}
+    <tr>
+      <td><a href="/orders/{{ o.id }}">{{ o.id }}</a></td>
+      <td>{{ o.created_at.strftime("%Y-%m-%d") }}</td>
+      <td>{{ o.grand_total }} so'm</td>
+      <td>{{ o.status.value }}</td>
+    </tr>
+  {% else %}
+    <tr><td colspan="4">Buyurtmalar yo'q.</td></tr>
+  {% endfor %}
+  </tbody>
+</table>
+{% endblock %}

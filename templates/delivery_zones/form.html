@@ -1,0 +1,13 @@
+{% extends "base.html" %}
+{% block title %}Yetkazib berish hududi{% endblock %}
+{% block content %}
+<h1>{% if zone %}Hududni tahrirlash{% else %}Yangi hudud{% endif %}</h1>
+<form method="post" action="{% if zone %}/zones/{{ zone.id }}/edit{% else %}/zones/new{% endif %}" class="form">
+  <label>Nomi (UZ)<input type="text" name="name_uz" value="{{ zone.name_uz if zone else '' }}" required></label>
+  <label>Nomi (RU)<input type="text" name="name_ru" value="{{ zone.name_ru if zone else '' }}" required></label>
+  <label>Yetkazib berish narxi (so'm)<input type="number" name="delivery_price" value="{{ zone.delivery_price if zone else 0 }}" required min="0"></label>
+  <label>Bepul yetkazib berish chegarasi (so'm, ixtiyoriy)<input type="number" name="free_delivery_threshold" value="{{ zone.free_delivery_threshold if zone and zone.free_delivery_threshold else '' }}" min="0"></label>
+  <label>Tartib raqami<input type="number" name="display_order" value="{{ zone.display_order if zone else 0 }}"></label>
+  <button type="submit">Saqlash</button>
+</form>
+{% endblock %}

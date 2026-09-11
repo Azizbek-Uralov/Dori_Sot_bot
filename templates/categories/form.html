@@ -1,0 +1,11 @@
+{% extends "base.html" %}
+{% block title %}Kategoriya{% endblock %}
+{% block content %}
+<h1>{% if category %}Kategoriyani tahrirlash{% else %}Yangi kategoriya{% endif %}</h1>
+<form method="post" action="{% if category %}/categories/{{ category.id }}/edit{% else %}/categories/new{% endif %}" class="form">
+  <label>Nomi (UZ)<input type="text" name="name_uz" value="{{ category.name_uz if category else '' }}" required></label>
+  <label>Nomi (RU)<input type="text" name="name_ru" value="{{ category.name_ru if category else '' }}" required></label>
+  <label>Tartib raqami<input type="number" name="display_order" value="{{ category.display_order if category else 0 }}"></label>
+  <button type="submit">Saqlash</button>
+</form>
+{% endblock %}

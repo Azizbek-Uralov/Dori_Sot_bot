@@ -1,0 +1,31 @@
+{% extends "base.html" %}
+{% block title %}Buyurtmalar{% endblock %}
+{% block content %}
+<h1>Buyurtmalar</h1>
+<form method="get" action="/orders" class="filter-form">
+  <select name="status" onchange="this.form.submit()">
+    <option value="">Barcha holatlar</option>
+    {% for s in statuses %}
+      <option value="{{ s.value }}" {% if selected_status == s.value %}selected{% endif %}>{{ s.value }}</option>
+    {% endfor %}
+  </select>
+</form>
+<table class="table">
+  <thead><tr><th>№</th><th>Mijoz</th><th>Telefon</th><th>Jami</th><th>Holat</th><th>Sana</th><th></th></tr></thead>
+  <tbody>
+  {% for o in orders %}
+    <tr>
+      <td>{{ o.id }}</td>
+      <td>{{ o.customer_name }}</td>
+      <td>{{ o.customer_phone }}</td>
+      <td>{{ o.grand_total }} so'm</td>
+      <td><span class="badge status-{{ o.status.value }}">{{ o.status.value }}</span></td>
+      <td>{{ o.created_at.strftime("%Y-%m-%d %H:%M") }}</td>
+      <td><a href="/orders/{{ o.id }}">Batafsil</a></td>
+    </tr>
+  {% else %}
+    <tr><td colspan="7">Buyurtmalar mavjud emas.</td></tr>
+  {% endfor %}
+  </tbody>
+</table>
+{% endblock %}

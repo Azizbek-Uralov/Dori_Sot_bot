@@ -1,0 +1,11 @@
+{% extends "base.html" %}
+{% block title %}Yangi admin{% endblock %}
+{% block content %}
+<h1>Yangi admin</h1>
+<form method="post" action="/admins/new" class="form">
+  <label>Login<input type="text" name="username" required></label>
+  <label>Parol<input type="password" name="password" required></label>
+  <label>Ism<input type="text" name="full_name"></label>
+  <button type="submit">Saqlash</button>
+</form>
+{% endblock %}
