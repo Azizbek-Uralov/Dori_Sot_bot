@@ -86,3 +86,27 @@ async def test_get_summary_computes_subtotal(db_session):
     summary = await cart_service.get_summary(db_session, user)
 
     assert summary.subtotal == 2 * 10000 + 1 * 25000
+
+
+async def test_open_cart_after_adding_item_in_same_session(db_session):
+    """Regression test for the "add to cart, then open cart" flow: within a single
+    request (one AsyncSession, mirroring bot/handlers/cart.py), accessing the
+    relationships involved must not trigger a lazy load, which would raise
+    MissingGreenlet under AsyncSession instead of working like plain sync code."""
+    user = await make_user(db_session, telegram_id=8)
+    category = await make_category(db_session)
+    product = await make_product(db_session, category=category, name_uz="Vitamin D", price=30000)
+
+    item = await cart_service.add_item(db_session, user, product.id, quantity=2)
+    # add_item's session.refresh() must not expire the item's relationships.
+    assert item.cart is not None
+    assert item.product.name_uz == "Vitamin D"
+
+    cart = await cart_service.get_or_create_cart(db_session, user)
+    assert [line.quantity for line in cart.items] == [2]
+    assert cart.items[0].product.name_uz == "Vitamin D"
+
+    summary = await cart_service.get_summary(db_session, user)
+    assert len(summary.lines) == 1
+    assert summary.lines[0].product.name_uz == "Vitamin D"
+    assert summary.subtotal == 60000

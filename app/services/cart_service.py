@@ -39,12 +39,12 @@ async def add_item(session: AsyncSession, user: User, product_id: int, quantity:
     stmt = select(CartItem).where(CartItem.cart_id == cart.user_id, CartItem.product_id == product_id)
     item = (await session.execute(stmt)).scalar_one_or_none()
     if item is None:
-        item = CartItem(cart_id=cart.user_id, product_id=product_id, quantity=quantity)
+        item = CartItem(cart=cart, product_id=product_id, quantity=quantity)
         session.add(item)
     else:
         item.quantity += quantity
     await session.commit()
-    await session.refresh(item)
+    await session.refresh(item, attribute_names=["created_at", "updated_at"])
     return item
 
 

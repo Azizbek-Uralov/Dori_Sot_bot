@@ -213,6 +213,36 @@ async def test_transition_status_rejects_skipping_states(db_session):
         await order_service.transition_status(db_session, order, OrderStatus.DELIVERED)
 
 
+async def test_transition_status_keeps_relationships_accessible(db_session):
+    """Regression test mirroring admin/routers/orders.py: get_order() eager-loads
+    items/delivery_zone/user, then transition_status() commits + refreshes the
+    order. That refresh must not expire those relationships, since notify_service
+    (order.items, order.user.telegram_id) reads them right after without a
+    re-query — an unscoped session.refresh() previously left them needing a lazy
+    load, which raises MissingGreenlet under AsyncSession."""
+    user = await make_user(db_session, telegram_id=109)
+    category = await make_category(db_session)
+    product = await make_product(db_session, category=category, price=60000, stock_quantity=10)
+    zone = await make_zone(db_session)
+    await cart_service.add_item(db_session, user, product.id, quantity=1)
+    created = await order_service.create_order(
+        db_session,
+        user=user,
+        full_name="Ali Aliyev",
+        phone="+998901234567",
+        zone=zone,
+        delivery_address_text="Chilonzor, 1-uy",
+        customer_language=Language.UZ,
+    )
+
+    order = await order_service.get_order(db_session, created.id)
+    order = await order_service.transition_status(db_session, order, OrderStatus.CONFIRMED)
+
+    assert len(order.items) == 1
+    assert order.user.id == user.id
+    assert order.delivery_zone.id == zone.id
+
+
 async def test_transition_status_terminal_states_reject_everything(db_session):
     user = await make_user(db_session, telegram_id=108)
     category = await make_category(db_session)

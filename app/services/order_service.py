@@ -94,7 +94,7 @@ async def create_order(
 
     await cart_service.clear_cart(session, user)
     await session.commit()
-    await session.refresh(order)
+    await session.refresh(order, attribute_names=["created_at", "updated_at"])
     return order
 
 
@@ -104,7 +104,7 @@ async def transition_status(session: AsyncSession, order: Order, new_status: Ord
         raise InvalidStatusTransitionError(current=order.status, target=new_status)
     order.status = new_status
     await session.commit()
-    await session.refresh(order)
+    await session.refresh(order, attribute_names=["updated_at"])
     return order
 
 
