@@ -1,35 +1,34 @@
 from app.constants import Language
+from app.i18n import ru, uz
 from app.i18n.translator import t
-from app.models.user import User
 from bot.handlers.checkout import _full_name_prompt
 
 
-def test_full_name_prompt_is_plain_for_first_time_user():
-    user = User(telegram_id=1, full_name=None)
-
-    prompt = _full_name_prompt(Language.UZ, user)
+def test_full_name_prompt_is_the_static_example_uz():
+    prompt = _full_name_prompt(Language.UZ)
 
     assert prompt == t("checkout.ask_full_name", Language.UZ)
-    assert "Alisher" not in prompt
-
-
-def test_full_name_prompt_reminds_returning_user_of_their_previous_name_uz():
-    user = User(telegram_id=2, full_name="Alisher Karimov")
-
-    prompt = _full_name_prompt(Language.UZ, user)
-
-    assert prompt == t("checkout.ask_full_name_previous", Language.UZ, name="Alisher Karimov")
     assert "Alisher Karimov" in prompt
-    # Must not read like a static "e.g." example — it's the user's own
-    # previously entered name, not a generic sample.
-    assert "masalan" not in prompt.lower()
 
 
-def test_full_name_prompt_reminds_returning_user_of_their_previous_name_ru():
-    user = User(telegram_id=3, full_name="Алишер Каримов")
+def test_full_name_prompt_is_the_static_example_ru():
+    prompt = _full_name_prompt(Language.RU)
 
-    prompt = _full_name_prompt(Language.RU, user)
-
-    assert prompt == t("checkout.ask_full_name_previous", Language.RU, name="Алишер Каримов")
+    assert prompt == t("checkout.ask_full_name", Language.RU)
     assert "Алишер Каримов" in prompt
-    assert "например" not in prompt.lower()
+
+
+def test_full_name_prompt_does_not_depend_on_any_saved_user_name():
+    # The prompt takes only a language now — there is no way to pass a
+    # user's saved full_name into it, so it can never be echoed back.
+    import inspect
+
+    params = list(inspect.signature(_full_name_prompt).parameters)
+    assert params == ["lang"]
+
+
+def test_ask_full_name_previous_key_removed():
+    # The "remind returning users of their last name" feature was reverted;
+    # its dedicated string must not linger unused in either language table.
+    assert "checkout.ask_full_name_previous" not in uz.STRINGS
+    assert "checkout.ask_full_name_previous" not in ru.STRINGS

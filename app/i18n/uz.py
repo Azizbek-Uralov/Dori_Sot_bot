@@ -38,11 +38,7 @@ STRINGS: dict[str, str] = {
         "Minimal buyurtma summasi {min_total} so'm. "
         "Sizning savatingiz {current_total} so'm. Yana {shortfall} so'mlik mahsulot qo'shing."
     ),
-    "checkout.ask_full_name": "Ism va familiyangizni kiriting:",
-    "checkout.ask_full_name_previous": (
-        "Oldingi buyurtmada kiritgan ismingiz: {name}. Xuddi shu ismni ishlatish uchun uni qaytadan yozing, "
-        "aks holda yangi ism va familiyangizni kiriting:"
-    ),
+    "checkout.ask_full_name": "Ism va familiyangizni kiriting (masalan: Alisher Karimov):",
     "checkout.ask_phone": "Telefon raqamingizni yuboring:",
     "checkout.share_contact_button": "📱 Raqamni yuborish",
     "checkout.invalid_phone": "Telefon raqami noto'g'ri. Masalan: +998901234567",

@@ -19,13 +19,9 @@ from bot.utils.phone import PHONE_RE
 router = Router(name="checkout")
 
 
-def _full_name_prompt(lang: Language, user: User) -> str:
-    """The plain prompt normally, or a reminder of the name from the user's
-    last order when they have one — worded as a reminder to fill in again,
-    not a static "e.g." example, since there is no button to reuse it: the
-    next message is always taken as the (re-typed or new) full name."""
-    if user.full_name:
-        return t("checkout.ask_full_name_previous", lang, name=user.full_name)
+def _full_name_prompt(lang: Language) -> str:
+    """Always the same static prompt with a made-up example name, regardless
+    of the user's own saved full_name — that must never be echoed back."""
     return t("checkout.ask_full_name", lang)
 
 
@@ -49,14 +45,14 @@ async def place_order_entry(callback: CallbackQuery, state: FSMContext, session,
         return
     await state.update_data(items_subtotal=summary.subtotal)
     await state.set_state(CheckoutStates.waiting_full_name)
-    await callback.message.answer(_full_name_prompt(lang, user))
+    await callback.message.answer(_full_name_prompt(lang))
 
 
 @router.message(CheckoutStates.waiting_full_name, F.text)
 async def receive_full_name(message: Message, state: FSMContext, session, user: User) -> None:
     full_name = (message.text or "").strip()
     if not full_name:
-        await message.answer(_full_name_prompt(user.language, user))
+        await message.answer(_full_name_prompt(user.language))
         return
     await state.update_data(full_name=full_name)
     await state.set_state(CheckoutStates.waiting_phone)
