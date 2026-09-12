@@ -3,7 +3,7 @@ STRINGS: dict[str, str] = {
     "language.ru_button": "🇷🇺 Русский",
     "language.choose": "Tilni tanlang / Выберите язык:",
     "language.changed": "Til o'zbekchaga o'zgartirildi.",
-    "start.welcome": "Assalomu alaykum, {name}! Uy hayvonlaringiz uchun dori-darmon va vitaminlar do'koniga xush kelibsiz 🐾",
+    "start.welcome": "Assalomu alaykum, {name}! Sog'liqni saqlash vositalari va vitaminlar do'koniga xush kelibsiz 💊",
     "subscribe.prompt": "Botdan foydalanish uchun avval bizning kanalimizga obuna bo'ling.",
     "subscribe.channel_button": "📢 Kanalga obuna bo'lish",
     "subscribe.check_button": "✅ Tekshirish",
@@ -39,6 +39,10 @@ STRINGS: dict[str, str] = {
         "Sizning savatingiz {current_total} so'm. Yana {shortfall} so'mlik mahsulot qo'shing."
     ),
     "checkout.ask_full_name": "Ism va familiyangizni kiriting:",
+    "checkout.ask_full_name_previous": (
+        "Oldingi buyurtmada kiritgan ismingiz: {name}. Xuddi shu ismni ishlatish uchun uni qaytadan yozing, "
+        "aks holda yangi ism va familiyangizni kiriting:"
+    ),
     "checkout.ask_phone": "Telefon raqamingizni yuboring:",
     "checkout.share_contact_button": "📱 Raqamni yuborish",
     "checkout.invalid_phone": "Telefon raqami noto'g'ri. Masalan: +998901234567",

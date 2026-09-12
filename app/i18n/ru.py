@@ -3,7 +3,7 @@ STRINGS: dict[str, str] = {
     "language.ru_button": "🇷🇺 Русский",
     "language.choose": "Tilni tanlang / Выберите язык:",
     "language.changed": "Язык изменён на русский.",
-    "start.welcome": "Здравствуйте, {name}! Добро пожаловать в магазин лекарств и витаминов для домашних питомцев 🐾",
+    "start.welcome": "Здравствуйте, {name}! Добро пожаловать в магазин товаров для здоровья и витаминов 💊",
     "subscribe.prompt": "Чтобы пользоваться ботом, сначала подпишитесь на наш канал.",
     "subscribe.channel_button": "📢 Подписаться на канал",
     "subscribe.check_button": "✅ Проверить",
@@ -39,6 +39,10 @@ STRINGS: dict[str, str] = {
         "Сумма вашей корзины {current_total} сум. Добавьте товаров ещё на {shortfall} сум."
     ),
     "checkout.ask_full_name": "Введите ваше имя и фамилию:",
+    "checkout.ask_full_name_previous": (
+        "Имя, указанное в прошлом заказе: {name}. Чтобы использовать то же имя, введите его ещё раз, "
+        "либо укажите новое имя и фамилию:"
+    ),
     "checkout.ask_phone": "Отправьте ваш номер телефона:",
     "checkout.share_contact_button": "📱 Отправить номер",
     "checkout.invalid_phone": "Неверный номер телефона. Например: +998901234567",
