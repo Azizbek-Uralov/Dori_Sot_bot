@@ -5,6 +5,12 @@
   <h1>Kategoriyalar</h1>
   <a class="btn" href="/categories/new">+ Yangi kategoriya</a>
 </div>
+{% set error = request.query_params.get('error') %}
+{% if error == 'has_active_products' %}
+<p class="error">Bu kategoriyada faol mahsulotlar mavjud, avval ularni o'chiring yoki nofaol qiling</p>
+{% elif error == 'has_products' %}
+<p class="error">Bu kategoriyaga bog'langan mahsulotlar mavjud, avval ularni o'chiring</p>
+{% endif %}
 <table class="table">
   <thead><tr><th>Nomi (UZ)</th><th>Nomi (RU)</th><th>Tartib</th><th>Holat</th><th></th></tr></thead>
   <tbody>
@@ -18,6 +24,9 @@
         <a href="/categories/{{ c.id }}/edit">Tahrirlash</a>
         <form method="post" action="/categories/{{ c.id }}/toggle-active">
           <button type="submit">{% if c.is_active %}Nofaol qilish{% else %}Faollashtirish{% endif %}</button>
+        </form>
+        <form method="post" action="/categories/{{ c.id }}/delete" onsubmit="return confirm('Rostdan o\'chirmoqchimisiz?');">
+          <button type="submit" class="danger">O'chirish</button>
         </form>
       </td>
     </tr>

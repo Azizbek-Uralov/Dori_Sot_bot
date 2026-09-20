@@ -2,10 +2,16 @@
 {% block title %}Kategoriya{% endblock %}
 {% block content %}
 <h1>{% if category %}Kategoriyani tahrirlash{% else %}Yangi kategoriya{% endif %}</h1>
+{% if error %}<p class="error">{{ error }}</p>{% endif %}
 <form method="post" action="{% if category %}/categories/{{ category.id }}/edit{% else %}/categories/new{% endif %}" class="form">
-  <label>Nomi (UZ)<input type="text" name="name_uz" value="{{ category.name_uz if category else '' }}" required></label>
-  <label>Nomi (RU)<input type="text" name="name_ru" value="{{ category.name_ru if category else '' }}" required></label>
-  <label>Tartib raqami<input type="number" name="display_order" value="{{ category.display_order if category else 0 }}"></label>
+  <label>Nomi (UZ)<input type="text" name="name_uz" value="{{ values.name_uz }}" required></label>
+  <label>Nomi (RU)<input type="text" name="name_ru" value="{{ values.name_ru }}" required></label>
+  <label>Tartib raqami<input type="number" name="display_order" value="{{ values.display_order }}" min="1" step="1" required></label>
+  {% if taken_orders %}
+  <p class="hint">Band bo'lgan raqamlar: {{ taken_orders | join(', ') }}</p>
+  {% else %}
+  <p class="hint">Band bo'lgan raqamlar yo'q.</p>
+  {% endif %}
   <button type="submit">Saqlash</button>
 </form>
 {% endblock %}
