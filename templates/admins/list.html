@@ -12,14 +12,16 @@
 <p class="error">O'zingizni o'chira olmaysiz</p>
 {% endif %}
 <table class="table">
-  <thead><tr><th>Login</th><th>Ism</th><th>Holat</th><th></th></tr></thead>
+  <thead><tr><th>Login</th><th>Ism</th><th>Telegram ID</th><th>Holat</th><th></th></tr></thead>
   <tbody>
   {% for a in admins %}
     <tr>
       <td>{{ a.username }}</td>
       <td>{{ a.full_name or '—' }}</td>
+      <td>{{ a.telegram_id or '—' }}</td>
       <td>{% if a.is_active %}<span class="badge badge-active">Faol</span>{% else %}<span class="badge badge-inactive">Nofaol</span>{% endif %}</td>
       <td class="actions">
+        <a href="/admins/{{ a.id }}/edit">Tahrirlash</a>
         <form method="post" action="/admins/{{ a.id }}/toggle-active">
           <button type="submit">{% if a.is_active %}Nofaol qilish{% else %}Faollashtirish{% endif %}</button>
         </form>

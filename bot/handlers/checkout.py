@@ -190,6 +190,9 @@ async def confirm_order(
     order_with_relations = await order_service.get_order(session, order.id)
     if order_with_relations is not None:
         sent = await notify_service.notify_admin_group(order_with_relations)
-        if sent:
+        # the group chat is the shared inbox; admins who put their Telegram ID
+        # in the panel also get the order as a private message
+        dm_count = await notify_service.notify_admins_direct(session, order_with_relations)
+        if sent or dm_count:
             order_with_relations.admin_notified_at = datetime.now(timezone.utc)
             await session.commit()

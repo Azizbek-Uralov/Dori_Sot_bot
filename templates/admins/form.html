@@ -1,11 +1,18 @@
 {% extends "base.html" %}
-{% block title %}Yangi admin{% endblock %}
+{% block title %}{% if admin_user %}Adminni tahrirlash{% else %}Yangi admin{% endif %}{% endblock %}
 {% block content %}
-<h1>Yangi admin</h1>
-<form method="post" action="/admins/new" class="form">
-  <label>Login<input type="text" name="username" required></label>
+<h1>{% if admin_user %}Adminni tahrirlash{% else %}Yangi admin{% endif %}</h1>
+{% if error %}<p class="error">{{ error }}</p>{% endif %}
+<form method="post" action="{% if admin_user %}/admins/{{ admin_user.id }}/edit{% else %}/admins/new{% endif %}" class="form">
+  {% if admin_user %}
+  <label>Login<input type="text" value="{{ values.username }}" disabled></label>
+  {% else %}
+  <label>Login<input type="text" name="username" value="{{ values.username }}" required></label>
   <label>Parol<input type="password" name="password" required></label>
-  <label>Ism<input type="text" name="full_name"></label>
+  {% endif %}
+  <label>Ism<input type="text" name="full_name" value="{{ values.full_name }}"></label>
+  <label>Telegram ID (ixtiyoriy)<input type="text" name="telegram_id" value="{{ values.telegram_id }}" inputmode="numeric" pattern="[0-9]*"></label>
+  <p class="hint">Telegram ID kiritilgan faol adminlarga yangi buyurtma haqida shaxsiy xabar ham yuboriladi. Bo'sh qoldirsangiz, faqat guruhga xabar boradi.</p>
   <button type="submit">Saqlash</button>
 </form>
 {% endblock %}

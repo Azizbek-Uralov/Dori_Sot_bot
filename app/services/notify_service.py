@@ -3,10 +3,13 @@ import logging
 from aiogram import Bot
 from aiogram.exceptions import TelegramAPIError
 from aiogram.utils.token import TokenValidationError
+from sqlalchemy import select
+from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.config import settings
 from app.constants import OrderStatus
 from app.i18n.translator import t
+from app.models.admin import Admin
 from app.models.order import Order
 
 logger = logging.getLogger(__name__)
@@ -43,6 +46,9 @@ async def close_bot() -> None:
 
 
 def render_admin_order_text(order: Order) -> str:
+    """Reads order.items and order.delivery_zone, so the order must come from
+    order_service.get_order (which eager-loads both) — a lazily loaded
+    relationship would blow up on an async session."""
     lines = [
         f"🆕 Yangi buyurtma №{order.id}",
         f"Mijoz: {order.customer_name}",
@@ -56,6 +62,7 @@ def render_admin_order_text(order: Order) -> str:
         f"Mahsulotlar summasi: {order.items_subtotal} so'm",
         f"Yetkazib berish: {order.delivery_fee} so'm",
         f"Jami: {order.grand_total} so'm",
+        f"Hudud: {order.delivery_zone.name_uz}",
         f"Manzil: {order.delivery_address_text}",
     ]
     return "\n".join(lines)
@@ -71,6 +78,38 @@ async def notify_admin_group(order: Order) -> bool:
     except TelegramAPIError as exc:
         logger.warning("Failed to notify admin group for order %s: %s", order.id, exc)
         return False
+
+
+async def notify_admins_direct(session: AsyncSession, order: Order) -> int:
+    """Send the same order notification as a private message to every active
+    admin with a telegram_id on file, and return how many went through.
+
+    Best-effort like notify_admin_group: one admin blocking the bot or never
+    having opened a chat with it must not cost the others their notification,
+    and must never surface to the customer placing the order.
+    """
+    bot = get_bot()
+    if bot is None:
+        return 0
+    stmt = (
+        select(Admin)
+        .where(Admin.is_active.is_(True), Admin.telegram_id.is_not(None))
+        .order_by(Admin.id)
+    )
+    admins = (await session.execute(stmt)).scalars().all()
+    if not admins:
+        return 0
+    text = render_admin_order_text(order)
+    sent = 0
+    for admin in admins:
+        try:
+            await bot.send_message(admin.telegram_id, text)
+            sent += 1
+        except TelegramAPIError as exc:
+            logger.warning(
+                "Failed to notify admin %s directly about order %s: %s", admin.id, order.id, exc
+            )
+    return sent
 
 
 async def notify_customer_status_change(order: Order, new_status: OrderStatus) -> bool:

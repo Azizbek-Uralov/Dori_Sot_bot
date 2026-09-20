@@ -104,12 +104,14 @@ async def make_admin(
     password: str = "devpass123",
     full_name: str | None = "Test Admin",
     is_active: bool = True,
+    telegram_id: int | None = None,
 ) -> Admin:
     admin = Admin(
         username=username,
         password_hash=hash_password(password),
         full_name=full_name,
         is_active=is_active,
+        telegram_id=telegram_id,
     )
     session.add(admin)
     await session.flush()
