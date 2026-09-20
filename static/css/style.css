@@ -80,6 +80,7 @@ h2 { font-size: 1.15rem; margin: 1.5rem 0 0.75rem; }
 .actions { display: flex; gap: 0.6rem; align-items: center; }
 .actions form { display: inline; }
 .actions button { background: none; border: none; color: var(--brand); cursor: pointer; padding: 0; font: inherit; }
+.actions button.danger { color: var(--danger); }
 .actions a { color: var(--brand); }
 
 .btn, button[type="submit"] {

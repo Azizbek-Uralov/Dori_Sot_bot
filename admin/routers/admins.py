@@ -1,7 +1,7 @@
 from fastapi import APIRouter, Depends, Form, Request
 from fastapi.responses import RedirectResponse
 from fastapi.templating import Jinja2Templates
-from sqlalchemy import select
+from sqlalchemy import func, select
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from admin.auth import hash_password
@@ -10,6 +10,11 @@ from app.models.admin import Admin
 
 router = APIRouter(prefix="/admins", dependencies=[Depends(get_current_admin)])
 templates = Jinja2Templates(directory="templates")
+
+
+async def _active_admin_count(session: AsyncSession) -> int:
+    stmt = select(func.count()).select_from(Admin).where(Admin.is_active.is_(True))
+    return (await session.execute(stmt)).scalar_one()
 
 
 @router.get("")
@@ -43,4 +48,29 @@ async def toggle_admin_active(admin_id: int, session: AsyncSession = Depends(get
     if admin_user is not None:
         admin_user.is_active = not admin_user.is_active
         await session.commit()
+    return RedirectResponse(url="/admins", status_code=303)
+
+
+@router.post("/{admin_id}/delete")
+async def delete_admin(
+    admin_id: int,
+    session: AsyncSession = Depends(get_db),
+    current_admin: Admin = Depends(get_current_admin),
+):
+    """Hard-delete an admin. Two guards stand between the button and the DELETE:
+    the panel must keep at least one active admin (otherwise nobody can log in
+    again), and nobody may delete the account they are logged in as.
+    """
+    admin_user = await session.get(Admin, admin_id)
+    if admin_user is None:
+        return RedirectResponse(url="/admins", status_code=303)
+    # Checked before the self-delete guard on purpose: when only one active
+    # admin is left it is necessarily the one making the request, and
+    # "there must always be an active admin" is the more informative reason.
+    if admin_user.is_active and await _active_admin_count(session) <= 1:
+        return RedirectResponse(url="/admins?error=last_active_admin", status_code=303)
+    if admin_user.id == current_admin.id:
+        return RedirectResponse(url="/admins?error=self_delete", status_code=303)
+    await session.delete(admin_user)
+    await session.commit()
     return RedirectResponse(url="/admins", status_code=303)

@@ -5,6 +5,12 @@
   <h1>Adminlar</h1>
   <a class="btn" href="/admins/new">+ Yangi admin</a>
 </div>
+{% set error = request.query_params.get('error') %}
+{% if error == 'last_active_admin' %}
+<p class="error">Tizimda kamida 1 ta faol admin bo'lishi shart</p>
+{% elif error == 'self_delete' %}
+<p class="error">O'zingizni o'chira olmaysiz</p>
+{% endif %}
 <table class="table">
   <thead><tr><th>Login</th><th>Ism</th><th>Holat</th><th></th></tr></thead>
   <tbody>
@@ -16,6 +22,9 @@
       <td class="actions">
         <form method="post" action="/admins/{{ a.id }}/toggle-active">
           <button type="submit">{% if a.is_active %}Nofaol qilish{% else %}Faollashtirish{% endif %}</button>
+        </form>
+        <form method="post" action="/admins/{{ a.id }}/delete" onsubmit="return confirm('Rostdan o\'chirmoqchimisiz?');">
+          <button type="submit" class="danger">O'chirish</button>
         </form>
       </td>
     </tr>
