@@ -1,6 +1,6 @@
 # DorSotBot
 
-Uy hayvonlari uchun dori-darmon va vitaminlar sotadigan Telegram bot (naqd pul bilan yetkazib berish) + buyurtmalarni boshqarish uchun veb-admin panel.
+Sog'liqni saqlash vositalari va vitaminlar sotadigan Telegram bot (naqd pul bilan yetkazib berish) + buyurtmalarni boshqarish uchun veb-admin panel.
 
 - **Bot**: aiogram 3.x (long polling)
 - **Admin panel**: FastAPI + Jinja2 (server-rendered, SPA emas)

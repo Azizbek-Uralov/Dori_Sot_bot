@@ -1,7 +1,7 @@
 [project]
 name = "dorsotbot"
 version = "0.1.0"
-description = "Telegram bot + admin panel for selling pet medications"
+description = "Telegram bot + admin panel for selling health supplements and vitamins"
 requires-python = ">=3.12"
 dependencies = [
     "aiogram>=3.31,<4",
